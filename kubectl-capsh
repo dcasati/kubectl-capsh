@@ -16,10 +16,11 @@
 # limitations under the License.
 
 set -eou pipefail
-
+set -x
 ################################################################################
 POD=$@
-CAPSH_STATIC_BIN=/usr/local/bin/libcap2-2.25-capsh-STATIC
+CAPSH_STATIC_BIN_PATH=/usr/local/bin
+CAPSH_STATIC_BIN=libcap2-2.25-capsh-STATIC
 ################################################################################
 
 usage() {
@@ -31,7 +32,7 @@ fetch_capsh(){
 	local _TARGET=libcap2-2.25-capsh-STATIC
 	curl -LO https://github.com/dcasati/kubectl-capsh/raw/master/bin/${_TARGET}
 	chmod +x ${_TARGET}
-	mv ${_TARGET} /usr/local/bin/${_TARGET}
+	sudo mv ${_TARGET} /usr/local/bin/${_TARGET}
 }
 
 if [ -z "${POD}" ]
@@ -40,18 +41,18 @@ then
 	exit 2
 fi
 
-if [ ! -f "${CAPSH_STATIC_BIN}" ]
+if [ ! -f "${CAPSH_STATIC_BIN_PATH}/${CAPSH_STATIC_BIN}" ]
 then
 	fetch_capsh
 fi
 
-if [ ! -x "${CAPSH_STATIC_BIN}" ]
+if [ ! -x "${CAPSH_STATIC_BIN_PATH}/${CAPSH_STATIC_BIN}" ]
 then
-	echo "please fix the permissions of ${CAPSH_STATIC_BIN}"
+	echo "please fix the permissions of ${CAPSH_STATIC_BIN_PATH}/${CAPSH_STATIC_BIN}"
 	exit 2
 fi
 
 
-kubectl cp ${CAPSH_STATIC_BIN} ${POD}:/capsh
-kubectl exec ${POD} -- /capsh --print
-kubectl exec ${POD} -- rm /capsh
+kubectl cp ${CAPSH_STATIC_BIN_PATH}/${CAPSH_STATIC_BIN} ${POD}:/${CAPSH_STATIC_BIN}
+kubectl exec ${POD} -- /${CAPSH_STATIC_BIN} --print
+kubectl exec ${POD} -- rm /${CAPSH_STATIC_BIN} 
