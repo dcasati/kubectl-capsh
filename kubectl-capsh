@@ -19,7 +19,7 @@ set -eou pipefail
 
 ################################################################################
 POD=$@
-CAPSH_STATIC_BIN=/home/dcasati/hacks/libcap2-2.25/progs/capsh
+CAPSH_STATIC_BIN=/usr/local/bin/libcap2-2.25-capsh-STATIC
 ################################################################################
 
 usage() {
@@ -27,6 +27,12 @@ usage() {
     exit 1
 }
 
+fetch_capsh(){
+	local _TARGET=libcap2-2.25-capsh-STATIC
+	curl -LO https://github.com/dcasati/kubectl-capsh/raw/master/bin/${_TARGET}
+	chmod +x ${_TARGET}
+	mv ${_TARGET} /usr/local/bin/${_TARGET}
+}
 
 if [ -z "${POD}" ]
 then
@@ -34,5 +40,18 @@ then
 	exit 2
 fi
 
+if [ ! -f "${CAPSH_STATIC_BIN}" ]
+then
+	fetch_capsh
+fi
+
+if [ ! -x "${CAPSH_STATIC_BIN}" ]
+then
+	echo "please fix the permissions of ${CAPSH_STATIC_BIN}"
+	exit 2
+fi
+
+
 kubectl cp ${CAPSH_STATIC_BIN} ${POD}:/capsh
 kubectl exec ${POD} -- /capsh --print
+kubectl exec ${POD} -- rm /capsh
