@@ -1,6 +1,8 @@
 # kube-capsh
 runs capsh on a pod
 
+![demo](demo.gif)
+
 # Installation
 ```bash
 curl -LO https://github.com/dcasati/kubectl-capsh/raw/master/kubectl-capsh
