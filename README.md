@@ -8,7 +8,17 @@ chmod +x ./kubectl-capsh
 sudo mv ./kubectl-capsh /usr/local/bin/kubectl-capsh
 ```
 
-kubectl-capsh needs `capsh` to run, so when executed for the first time it will download that file from this repository and install it under `/usr/local/bin/`
+kubectl-capsh needs `capsh` to run, so when executed for the first time it will download
+that file from this repository and install it under `/usr/local/bin/`. If you need to 
+manualy fetch and install `capsh` you can grab a copy of it from this repo and move it 
+to `/usr/local/bin`.
+
+```bash
+CAPSH_STATIC_BIN=libcap2-2.25-capsh-STATIC
+curl -LO https://github.com/dcasati/kubectl-capsh/raw/main/bin/${CAPSH_STATIC_BIN}
+chmod +x ${CAPSH_STATIC_BIN}
+sudo mv ${CAPSH_STATIC_BIN} ${CAPSH_STATIC_BIN_PATH}}/${CAPSH_STATIC_BIN}
+```
 
 # Usage
 
@@ -20,7 +30,9 @@ kubectl capsh <pod>
 ## Why this?
 TL;DR - kubectl-capsh will automate the following laborious process.
 
-You might need to check what `capabilities(7)` a running pod has for security, audit or development purposes. You could manualy `exec` into the pod and check for this information on `/proc/pid/status`
+You might need to check what `capabilities(7)` a running pod has for security, 
+audit or development purposes. You could manualy `exec` into the pod and check for this 
+information on `/proc/pid/status`
 
 For example:
 
@@ -108,7 +120,8 @@ The following commands where executed on an Ubuntu 20.04 machine:
 	$ cd ../ && make
 	```
 
-	The new static files are available under `progs/`. Double check that the new `capsh` is now static with `ldd` and
+	The new static files are available under `progs/`. Double check that the new `capsh` 
+	is now static with `ldd` and
 	`file`
 
 	ldd -
