@@ -1,22 +1,8 @@
 #!/usr/bin/env bash
 # 
 # kubecapsh(1) - checks the capability support on a runnind pod.
-
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 set -eou pipefail
-set -x
 ################################################################################
 POD=$@
 CAPSH_STATIC_BIN_PATH=/usr/local/bin
@@ -29,10 +15,12 @@ usage() {
 }
 
 fetch_capsh(){
-	local _TARGET=libcap2-2.25-capsh-STATIC
-	curl -LO https://github.com/dcasati/kubectl-capsh/raw/master/bin/${_TARGET}
-	chmod +x ${_TARGET}
-	sudo mv ${_TARGET} /usr/local/bin/${_TARGET}
+	echo "fetching ${CAPSH_STATIC_BIN} from  https://github.com/dcasati/kubectl-capsh/raw/main/bin/${CAPSH_STATIC_BIN}"
+	curl -LO https://github.com/dcasati/kubectl-capsh/raw/main/bin/${CAPSH_STATIC_BIN}
+	chmod +x ${CAPSH_STATIC_BIN}
+	sudo mv ${CAPSH_STATIC_BIN} ${CAPSH_STATIC_BIN_PATH}}/${CAPSH_STATIC_BIN} || \
+		echo "can't copy ${CAPSH_STATIC_BIN} to ${CAPSH_STATIC_BIN_PATH}}."
+		echo "please copy the file to that location before proceeding."
 }
 
 if [ -z "${POD}" ]
@@ -52,7 +40,10 @@ then
 	exit 2
 fi
 
-
-kubectl cp ${CAPSH_STATIC_BIN_PATH}/${CAPSH_STATIC_BIN} ${POD}:/${CAPSH_STATIC_BIN}
-kubectl exec ${POD} -- /${CAPSH_STATIC_BIN} --print
-kubectl exec ${POD} -- rm /${CAPSH_STATIC_BIN} 
+if kubectl cp ${CAPSH_STATIC_BIN_PATH}/${CAPSH_STATIC_BIN} ${POD}:/${CAPSH_STATIC_BIN}
+then
+	kubectl exec ${POD} -- /${CAPSH_STATIC_BIN} --print
+	kubectl exec ${POD} -- rm /${CAPSH_STATIC_BIN} 
+else
+	echo "skipping ${POD}. can't copy binary to ${POD}"
+fi
