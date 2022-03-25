@@ -5,7 +5,7 @@ runs capsh on a pod
 
 # Installation
 ```bash
-curl -LO https://github.com/dcasati/kubectl-capsh/raw/master/kubectl-capsh
+curl -LO https://github.com/dcasati/kubectl-capsh/raw/main/kubectl-capsh
 chmod +x ./kubectl-capsh
 sudo mv ./kubectl-capsh /usr/local/bin/kubectl-capsh
 ```
