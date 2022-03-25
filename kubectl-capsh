@@ -1,49 +1,52 @@
 #!/usr/bin/env bash
-# 
+#
 # kubecapsh(1) - checks the capability support on a runnind pod.
 #
+# shfmt -i 2 -ci -w
 set -eou pipefail
+set -x
 ################################################################################
-POD=$@
-CAPSH_STATIC_BIN_PATH=/usr/local/bin
+POD=$1
+CAPSH_DIR=${HOME}/.config/capsh
 CAPSH_STATIC_BIN=libcap2-2.25-capsh-STATIC
 ################################################################################
 
 usage() {
-    echo "usage: ${0##*/} [POD]"
-    exit 1
+  echo "usage: ${0##*/} [POD]"
+  exit 1
 }
 
-fetch_capsh(){
-	echo "fetching ${CAPSH_STATIC_BIN} from  https://github.com/dcasati/kubectl-capsh/raw/main/bin/${CAPSH_STATIC_BIN}"
-	curl -LO https://github.com/dcasati/kubectl-capsh/raw/main/bin/${CAPSH_STATIC_BIN}
-	chmod +x ${CAPSH_STATIC_BIN}
-	sudo mv ${CAPSH_STATIC_BIN} ${CAPSH_STATIC_BIN_PATH}}/${CAPSH_STATIC_BIN} || \
-		echo "can't copy ${CAPSH_STATIC_BIN} to ${CAPSH_STATIC_BIN_PATH}}."
-		echo "please copy the file to that location before proceeding."
+fetch_capsh() {
+  echo "fetching ${CAPSH_STATIC_BIN} from  https://github.com/dcasati/kubectl-capsh/raw/main/bin/${CAPSH_STATIC_BIN}"
+  curl -LO https://github.com/dcasati/kubectl-capsh/raw/main/bin/${CAPSH_STATIC_BIN}
+  chmod +x ${CAPSH_STATIC_BIN}
+
+  if [ ! -d "${CAPSH_DIR}" ]; then
+    mkdir "${CAPSH_DIR}"
+  fi
+
+  mv ${CAPSH_STATIC_BIN} "${CAPSH_DIR}"/${CAPSH_STATIC_BIN} ||
+    echo "can't copy ${CAPSH_STATIC_BIN} to ${CAPSH_STATIC_BIN_PATH}}."
+  echo "please copy the file to that location before proceeding."
 }
 
-if [ -z "${POD}" ]
-then
-	echo "You need to specify a Pod to run this command"
-	exit 2
+if [ -z "${POD}" ]; then
+  echo "You need to specify a Pod to run this command"
+  exit 2
 fi
 
-if [ ! -f "${CAPSH_STATIC_BIN_PATH}/${CAPSH_STATIC_BIN}" ]
-then
-	fetch_capsh
+if [ ! -f "${CAPSH_STATIC_BIN}" ]; then
+  fetch_capsh
 fi
 
-if [ ! -x "${CAPSH_STATIC_BIN_PATH}/${CAPSH_STATIC_BIN}" ]
-then
-	echo "please fix the permissions of ${CAPSH_STATIC_BIN_PATH}/${CAPSH_STATIC_BIN}"
-	exit 2
+if [ ! -x "${CAPSH_STATIC_BIN}" ]; then
+  echo "please fix the permissions of ${CAPSH_STATIC_BIN}"
+  exit 2
 fi
 
-if kubectl cp ${CAPSH_STATIC_BIN_PATH}/${CAPSH_STATIC_BIN} ${POD}:/${CAPSH_STATIC_BIN}
-then
-	kubectl exec ${POD} -- /${CAPSH_STATIC_BIN} --print
-	kubectl exec ${POD} -- rm /${CAPSH_STATIC_BIN} 
+if kubectl cp ${CAPSH_STATIC_BIN} "${POD}":/tmp/${CAPSH_STATIC_BIN}; then
+  kubectl exec "${POD}" -- /tmp/${CAPSH_STATIC_BIN} --print
+  kubectl exec "${POD}" -- rm /tmp/${CAPSH_STATIC_BIN}
 else
-	echo "skipping ${POD}. can't copy binary to ${POD}"
+  echo "skipping ${POD}. can't copy binary to ${POD}"
 fi
