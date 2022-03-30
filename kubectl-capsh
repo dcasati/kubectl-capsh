@@ -4,9 +4,8 @@
 #
 # shfmt -i 2 -ci -w
 set -eou pipefail
-set -x
 ################################################################################
-POD=$1
+POD=${1:-DEFAULTPOD}
 CAPSH_DIR=${HOME}/.config/capsh
 CAPSH_STATIC_BIN=libcap2-2.25-capsh-STATIC
 ################################################################################
@@ -30,7 +29,7 @@ fetch_capsh() {
   echo "please copy the file to that location before proceeding."
 }
 
-if [ -z "${POD}" ]; then
+if [[ -z "${POD+1}"  || "${POD}" == "DEFAULTPOD" ]]; then
   echo "You need to specify a Pod to run this command"
   exit 2
 fi
