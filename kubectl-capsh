@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# kubecapsh(1) - checks the capability support on a runnind pod.
+# kubecapsh(1) - checks the capability support on a running pod.
 #
 # shfmt -i 2 -ci -w
 set -eou pipefail
