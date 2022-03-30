@@ -1,5 +1,5 @@
 # kube-capsh
-runs capsh on a pod
+check the [capabilities(7)](https://man7.org/linux/man-pages/man7/capabilities.7.html) of a running Pod.
 
 ![demo](demo.gif)
 
